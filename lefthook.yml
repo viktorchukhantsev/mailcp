@@ -1,0 +1,15 @@
+pre-push:
+  commands:
+    go-vuln:
+      tags: security
+      run: govulncheck ./...
+
+pre-commit:
+  parallel: true
+  commands:
+    govet:
+      tags: style
+      run: go vet ./...
+    golangci-lint:
+      tags: style
+      run: golangci-lint run
