@@ -8,25 +8,7 @@ import (
 )
 
 func ListMailboxes(serverName string) {
-	authInfo := ParseAuthinfo()
-	var serverCredentials Machine
-	var found bool
-
-	for i := range authInfo.Machines {
-		if authInfo.Machines[i].Name == serverName {
-			serverCredentials = authInfo.Machines[i]
-			found = true
-			break
-		}
-	}
-	if !found {
-		log.Fatal("Unable to found this server in authinfo")
-	}
-
-	if serverCredentials.Valid() {
-		log.Fatalf("%s credentials is invalid\n", serverName)
-	}
-
+	serverCredentials := mustFindCredentials(serverName)
 	log.Println("Connecting to server...")
 
 	// Connect to server
@@ -60,4 +42,33 @@ func ListMailboxes(serverName string) {
 	if err := <-done; err != nil {
 		log.Fatal(err)
 	}
+}
+
+func CreateMailbox(serverName string, mailboxNames ...string) {
+	serverCredentials := mustFindCredentials(serverName)
+	log.Println("Connecting to server...")
+
+	// Connect to server
+	c, err := client.DialTLS(serverCredentials.DialString(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Connected")
+
+	// Don't forget to logout
+	defer c.Logout()
+
+	// Login
+	if err := c.Login(serverCredentials.Login, serverCredentials.Password); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Logged in")
+
+	log.Println("Creating mailboxes")
+	for _, mailboxName := range mailboxNames {
+		if err := c.Create(mailboxName); err != nil {
+			log.Printf("Unable to create mailbox %s: %s\n", mailboxName, err)
+		}
+	}
+	log.Println("Mailboxes was created sucessfully")
 }

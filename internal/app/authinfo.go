@@ -94,3 +94,26 @@ func ParseAuthinfo() Authinfo {
 
 	return res
 }
+
+func mustFindCredentials(serverName string) Machine {
+	authInfo := ParseAuthinfo()
+	var serverCredentials Machine
+	var found bool
+
+	for i := range authInfo.Machines {
+		if authInfo.Machines[i].Name == serverName {
+			serverCredentials = authInfo.Machines[i]
+			found = true
+			break
+		}
+	}
+	if !found {
+		log.Fatal("Unable to found this server in authinfo")
+	}
+
+	if serverCredentials.Valid() {
+		log.Fatalf("%s credentials is invalid\n", serverName)
+	}
+
+	return serverCredentials
+}
