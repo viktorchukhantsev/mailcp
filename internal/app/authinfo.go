@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -22,17 +21,29 @@ type Authinfo struct {
 func ParseAuthinfo() *Authinfo {
 	authinfo, err := helpers.DecryptAuthinfo()
 	if err != nil {
-		fmt.Printf("%v\n", err)
 		log.Fatalf("Unable to decrypt ~/.authinfo.gpg")
 	}
 
 	res := &Authinfo{}
 
 	for _, line := range strings.Split(authinfo, "\n") {
+		if []rune(line)[0] == []rune("#")[0] {
+			continue
+		}
 		machine := Machine{}
-		r := strings.NewReader(line)
-		fmt.Fscanf(r, "machine %s login %s port %s password %s", &machine.Name, &machine.Login, &machine.Port, &machine.Password)
-		machine.Password = helpers.RemoveQuotes(machine.Password)
+		splitedLine := strings.Split(line, " ")
+		for i := 0; i <= len(splitedLine)-2; i += 2 {
+			switch op, val := splitedLine[i], splitedLine[i+1]; op {
+			case "machine":
+				machine.Name = val
+			case "login":
+				machine.Login = val
+			case "port":
+				machine.Port = val
+			case "password":
+				machine.Password = helpers.RemoveQuotes(val)
+			}
+		}
 		res.Machines = append(res.Machines, machine)
 	}
 
