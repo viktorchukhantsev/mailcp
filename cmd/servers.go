@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -18,13 +18,12 @@ var serversCmd = &cobra.Command{
 	Short: "Print servers available for mailcp",
 	Long:  `It uses ~/.authinfo.gpg and GPG`,
 	Run: func(cmd *cobra.Command, args []string) {
-		authInfo := app.ParseAuthinfo()
-
-		for _, machine := range authInfo.Machines {
-			fmt.Printf("- %s\n", machine.Name)
-			fmt.Printf("  %s\n", machine.Port)
-			fmt.Printf("  %s\n", machine.Login)
-			fmt.Printf("  %s\n", strings.Repeat("*", len(machine.Password)))
+		log.Println("Listing available servers")
+		for _, machine := range app.ParseAuthinfo().Machines {
+			log.Printf("- %s\n", machine.Name)
+			log.Printf("  %s\n", machine.PortNumber())
+			log.Printf("  %s\n", machine.Login)
+			log.Printf("  %s\n", strings.Repeat("*", len(machine.Password)))
 		}
 	},
 }
