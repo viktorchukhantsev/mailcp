@@ -9,6 +9,7 @@ import (
 func init() {
 	mailboxCmd.AddCommand(mailboxLsCmd)
 	mailboxCmd.AddCommand(mailboxCreateCmd)
+	mailboxCmd.AddCommand(mailboxLsMessagesCmd)
 	rootCmd.AddCommand(mailboxCmd)
 }
 
@@ -38,5 +39,16 @@ var mailboxCreateCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		app.CreateMailbox(args[0], args[1:]...)
+	},
+}
+
+var mailboxLsMessagesCmd = &cobra.Command{
+	TraverseChildren: true,
+	Use:              "content",
+	Short:            "Show mailbox content",
+	Long:             "Show mailbox content on server",
+	Args:             cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		app.ContentMailbox(args[0], args[1])
 	},
 }

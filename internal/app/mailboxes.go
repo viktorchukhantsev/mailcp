@@ -3,29 +3,16 @@ package app
 import (
 	"log"
 
-	"github.com/emersion/go-imap"
-	"github.com/emersion/go-imap/client"
+	imap "github.com/emersion/go-imap"
+	client "github.com/emersion/go-imap/client"
 )
 
 func ListMailboxes(serverName string) {
 	serverCredentials := mustFindCredentials(serverName)
-	log.Println("Connecting to server...")
-
-	// Connect to server
-	c, err := client.DialTLS(serverCredentials.DialString(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Connected")
+	c := createClient(serverCredentials)
 
 	// Don't forget to logout
 	defer c.Logout()
-
-	// Login
-	if err := c.Login(serverCredentials.Login, serverCredentials.Password); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Logged in")
 
 	// List mailboxes
 	mailboxes := make(chan *imap.MailboxInfo, 10)

@@ -18,18 +18,22 @@ type Machine struct {
 
 func (m Machine) Valid() bool {
 	if len(m.Password) == 0 {
+		log.Printf("%s: password invalid", m.Name)
 		return false
 	}
 
 	if len(m.Name) == 0 {
+		log.Printf("%s: name invalid", m.Name)
 		return false
 	}
 
 	if len(m.Port) == 0 {
+		log.Printf("%s: port invalid", m.Name)
 		return false
 	}
 
 	if len(m.Login) == 0 {
+		log.Printf("%s: login invalid", m.Name)
 		return false
 	}
 
@@ -111,7 +115,7 @@ func mustFindCredentials(serverName string) Machine {
 		log.Fatal("Unable to found this server in authinfo")
 	}
 
-	if serverCredentials.Valid() {
+	if !serverCredentials.Valid() {
 		log.Fatalf("%s credentials is invalid\n", serverName)
 	}
 
