@@ -9,6 +9,7 @@ import (
 func init() {
 	mailboxCmd.AddCommand(mailboxLsCmd)
 	mailboxCmd.AddCommand(mailboxCreateCmd)
+	mailboxCmd.AddCommand(mailboxCopyCmd)
 	rootCmd.AddCommand(mailboxCmd)
 }
 
@@ -38,5 +39,15 @@ var mailboxCreateCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		app.CreateMailbox(args[0], args[1:]...)
+	},
+}
+
+var mailboxCopyCmd = &cobra.Command{
+	Use:   "copy",
+	Short: "copy mailbox",
+	Long:  "Copy mailbox from one server to another one server",
+	Args:  cobra.MinimumNArgs(4),
+	Run: func(cmd *cobra.Command, args []string) {
+		app.CopyMailbox(args[0], args[1], args[2], args[3])
 	},
 }

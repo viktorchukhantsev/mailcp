@@ -72,3 +72,42 @@ func CreateMailbox(serverName string, mailboxNames ...string) {
 	}
 	log.Println("Mailboxes was created sucessfully")
 }
+
+func CopyMailbox(fromServerName, origMailboxName, toServerName, destMailboxName string) {
+	fromServerCredentials := mustFindCredentials(fromServerName)
+	toServerCredentials := mustFindCredentials(toServerName)
+	log.Println("From: Connecting to server...")
+
+	// Connect to server
+	fromClient, err := client.DialTLS(fromServerCredentials.DialString(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("From: Connected")
+
+	// Don't forget to logout
+	defer fromClient.Logout()
+
+	// Login
+	if err := fromClient.Login(fromServerCredentials.Login, fromServerCredentials.Password); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("From: Logged in")
+
+	log.Println("To: Connecting to server...")
+	// Connect to server
+	toClient, err := client.DialTLS(toServerCredentials.DialString(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("To: Connected")
+
+	// Don't forget to logout
+	defer toClient.Logout()
+
+	// Login
+	if err := toClient.Login(toServerCredentials.Login, toServerCredentials.Password); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("To: Logged in")
+}
